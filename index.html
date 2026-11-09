@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>단꿈e 수강 등록 사전 확인</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --orange:#F5821F; --orange-dark:#D96A0B; --orange-soft:#FFF3E8;
+    --ink:#222; --sub:#666; --muted:#999; --line:#E6E6E6; --bg:#F6F6F4; --card:#fff;
+    --red:#D9443A; --red-soft:#FDEEEC; --green:#2E9E5B; --green-soft:#EAF7EF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;-webkit-text-size-adjust:100%}
+  body{min-height:100vh;padding:0 0 40px}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px}
+  header{padding:22px 0 14px;text-align:center}
+  .logo{font-size:22px;font-weight:800;letter-spacing:-.5px}
+  .logo .e{color:var(--orange)}
+  header h1{font-size:19px;font-weight:700;margin-top:10px;line-height:1.4}
+  header p{font-size:14px;color:var(--sub);margin-top:6px;line-height:1.5}
+  .demo{background:#333;color:#fff;font-size:12px;text-align:center;padding:6px}
+
+  .steps{display:flex;gap:6px;margin:6px 0 14px}
+  .steps span{flex:1;height:5px;border-radius:3px;background:#E1E1DE}
+  .steps span.on{background:var(--orange)}
+  .stepLabel{font-size:13px;color:var(--orange-dark);font-weight:700;margin-bottom:6px}
+
+  .card{background:var(--card);border-radius:16px;padding:22px 18px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .card h2{font-size:18px;font-weight:700;line-height:1.45;margin-bottom:6px}
+  .card .desc{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:18px}
+  .hidden{display:none!important}
+
+  label.f{display:block;font-size:14px;font-weight:600;margin:16px 0 7px}
+  label.f small{font-weight:400;color:var(--muted);margin-left:4px}
+  input.t{width:100%;height:50px;border:1px solid var(--line);border-radius:10px;padding:0 14px;font-size:16px;font-family:inherit;background:#fff}
+  input.t:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(245,130,31,.15)}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+  .q{margin-top:22px;padding-top:20px;border-top:1px solid #F0F0F0}
+  .q:first-of-type{border-top:none;padding-top:0;margin-top:0}
+  #joinedArea .q{margin-top:22px;padding-top:20px;border-top:1px solid #F0F0F0}
+  .q .qt{font-size:15.5px;font-weight:700;line-height:1.5;margin-bottom:10px}
+  .seg{display:flex;gap:8px}
+  .seg button{flex:1;height:50px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:15.5px;font-family:inherit;font-weight:600;color:var(--ink);cursor:pointer}
+  .seg button.sel{border-color:var(--orange);background:var(--orange-soft);color:var(--orange-dark)}
+
+  .opt{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-bottom:10px;background:#fff;font-family:inherit;cursor:pointer}
+  .opt b{display:block;font-size:16px;color:var(--ink)}
+  .opt span{display:block;font-size:13.5px;color:var(--sub);margin-top:4px;line-height:1.5}
+  .opt.sel{border-color:var(--orange);background:var(--orange-soft)}
+  .opt.sel b{color:var(--orange-dark)}
+
+  .note{border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.6;margin-top:12px}
+  .note.warn{background:var(--red-soft);color:#9C2F27}
+  .note.info{background:#F3F3F1;color:#555}
+  .note ul{padding-left:16px}
+
+  .btn{display:block;width:100%;height:54px;border:none;border-radius:12px;background:var(--orange);color:#fff;font-size:16.5px;font-weight:700;font-family:inherit;margin-top:22px;cursor:pointer}
+  .btn:disabled{background:#D5D5D2;cursor:not-allowed}
+  .btn.line{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .btn.ghost{background:transparent;color:var(--sub);height:44px;margin-top:8px;font-weight:500;font-size:14.5px}
+  .row2{display:flex;gap:8px}
+  .row2 .btn{margin-top:22px}
+  .row2 .btn.line{flex:0 0 32%}
+
+  .confirmBox{border:1.5px dashed #E0C3A6;border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;margin-top:6px}
+  .confirmBox .txt{flex:1;font-size:14.5px;line-height:1.5}
+  .confirmBox .txt b{display:block;font-size:15.5px}
+  .confirmBox button{flex:0 0 auto;height:44px;padding:0 16px;border-radius:10px;border:none;background:var(--ink);color:#fff;font-weight:700;font-size:14.5px;font-family:inherit;cursor:pointer}
+  .confirmBox.done{border:1.5px solid #BFE3CC;background:var(--green-soft)}
+  .confirmBox.done button{background:#fff;color:var(--green);border:1px solid #BFE3CC}
+  .req{color:var(--red);font-weight:700}
+
+  .summary{background:#FAFAF8;border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.9;margin-bottom:16px}
+  .summary div{display:flex;justify-content:space-between;gap:10px}
+  .summary dt{color:var(--sub);flex:0 0 auto;white-space:nowrap}
+  .summary dd{font-weight:600;text-align:right;word-break:break-all}
+
+  .center{text-align:center}
+  .bigIcon{width:64px;height:64px;border-radius:50%;margin:6px auto 16px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800}
+  .bigIcon.ok{background:var(--green-soft);color:var(--green)}
+  .bigIcon.stop{background:var(--orange-soft);color:var(--orange-dark)}
+
+  .err{color:var(--red);font-size:13.5px;margin-top:10px;line-height:1.5}
+
+  /* ---------- 팝업 ---------- */
+  .dim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+  @media(min-width:520px){.dim{align-items:center}}
+  .modal{background:#fff;width:100%;max-width:480px;border-radius:18px 18px 0 0;max-height:92vh;display:flex;flex-direction:column;animation:up .22s ease}
+  @media(min-width:520px){.modal{border-radius:18px}}
+  @keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
+  .mHead{padding:20px 20px 12px;border-bottom:1px solid #F0F0F0}
+  .mHead h3{font-size:17.5px;font-weight:700;line-height:1.4}
+  .mHead p{font-size:13px;color:var(--muted);margin-top:4px}
+  .bar{height:4px;background:#EEE;border-radius:2px;margin-top:12px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--orange);transition:width .1s}
+  .mBody{padding:18px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;font-size:14.5px;line-height:1.7;color:#333}
+  .mBody p{margin-bottom:10px}
+  .mBody h4{font-size:15.5px;font-weight:700;color:var(--ink);margin:20px 0 8px;display:flex;gap:8px;align-items:center}
+  .mBody h4:first-child{margin-top:0}
+  .mBody h4 em{font-style:normal;flex:0 0 22px;height:22px;border-radius:50%;background:var(--orange);color:#fff;font-size:12.5px;display:flex;align-items:center;justify-content:center}
+  .mBody ul{padding-left:18px}
+  .mBody li{margin-bottom:7px}
+  .mBody b{color:var(--ink)}
+  .mBody .end{margin-top:22px;padding:12px;border-radius:10px;background:#FAFAF8;text-align:center;color:var(--muted);font-size:13px}
+  .mFoot{padding:12px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid #F0F0F0}
+  .mFoot .scrollMsg{text-align:center;font-size:14px;color:var(--orange-dark);font-weight:600;padding:12px 0}
+  .agreeQ{background:var(--orange-soft);border-radius:12px;padding:14px;font-size:14.5px;line-height:1.6;font-weight:600;color:#7A3D06;text-align:center}
+  .mFoot .btn{margin-top:12px}
+  .mFoot .row2 .btn{margin-top:12px}
+
+  /* ---------- 전화 요청 ---------- */
+  .callBox{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:8px;background:#FAFAFA;margin:4px 0 22px}
+  .callBox .txt{flex:1;font-size:13.5px;line-height:1.5;color:var(--sub)}
+  .callBox .txt b{display:block;font-size:14.5px;color:var(--ink);margin-bottom:2px}
+  .callBox button{flex:0 0 auto;height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--ink);background:#fff;color:var(--ink);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
+  .phoneLine{margin-top:14px;padding:14px;border-radius:8px;background:#F6F6F6;text-align:center;font-size:14px;color:var(--sub)}
+  .phoneLine b{display:block;font-size:19px;color:var(--ink);margin-top:4px;letter-spacing:.5px}
+
+  /* ---------- 주소 입력 ---------- */
+  .addrArea{margin-top:16px;padding:16px;border:1px solid var(--line);border-radius:12px;background:#FCFCFC}
+  .addrTitle{font-size:14.5px;font-weight:700}
+  .addrArea label.f:first-of-type{margin-top:10px}
+  .zipRow{display:flex;gap:8px}
+  .zipRow input{flex:1}
+  .zipBtn{flex:0 0 auto;height:50px;padding:0 16px;border-radius:10px;border:1px solid var(--ink);background:#fff;color:var(--ink);font-size:14.5px;font-weight:600;font-family:inherit;cursor:pointer}
+  input.t[readonly]{background:#F7F7F7;color:#555}
+  .addrArea .note{margin-top:14px}
+  .chk{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:14px;line-height:1.55;font-weight:600;cursor:pointer}
+  .chk input{flex:0 0 20px;width:20px;height:20px;margin-top:1px;accent-color:#2F2F2F}
+  .zipModal{height:86vh;max-height:none}
+  .zipHead{display:flex;justify-content:space-between;align-items:center}
+  .zipHead button{border:none;background:none;font-size:20px;color:var(--sub);cursor:pointer;padding:4px 8px}
+  .zipLayer{flex:1;overflow:hidden}
+
+/* ===================== 디자인: 화이트 미니멀 + 토글 버튼 + 번호형 단계 ===================== */
+body.tG{--orange:#D98B61;--orange-dark:#B86E46;--orange-soft:#FBF3EE;--ink:#2B2B2B;--sub:#777;--muted:#A3A3A3;--line:#E4E4E4;--bg:#FFFFFF;--card:#FFFFFF}
+.tG header{text-align:left;padding:28px 0 18px}
+.tG .logo{font-size:18px}
+.tG header h1{font-size:22px;font-weight:700;margin-top:14px}
+.tG .card{box-shadow:none;border-radius:0;padding:18px 0}
+.tG .stepLabel{color:var(--muted);font-weight:600;letter-spacing:.2px}
+.tG input.t{border:none;border-bottom:1.5px solid #E2E2E2;border-radius:0;padding:0 2px;height:48px}
+.tG input.t:focus{border-color:#2B2B2B;box-shadow:none}
+.tG .seg button,.tG .opt{border-radius:8px;font-weight:500}
+.tG .seg button.sel,.tG .opt.sel{border-color:#2B2B2B;background:#FAFAFA;color:#2B2B2B}
+.tG .opt.sel b{color:#2B2B2B}
+.tG .btn{background:#2F2F2F;border-radius:8px;font-weight:600}
+.tG .btn.line{background:#fff;color:#2B2B2B;border:1px solid #DADADA}
+.tG .btn:disabled{background:#E6E6E6;color:#AAA}
+.tG .confirmBox{border:1px solid var(--line);border-radius:8px}
+.tG .confirmBox button{background:#fff;color:#2B2B2B;border:1px solid #2B2B2B}
+.tG .confirmBox.done{background:#F6FAF7;border-color:#CFE3D5}
+.tG .summary{background:#FAFAFA;border-radius:8px}
+.tG .note.warn{background:#FBF3EE;color:#9A5A37}
+.tG .modal{border-radius:14px 14px 0 0}
+.tG .mBody h4 em{background:#2B2B2B}
+.tG .bar i{background:#2B2B2B}
+.tG .agreeQ{background:#F6F6F6;color:#2B2B2B;border-radius:8px}
+.tG .mFoot .scrollMsg{color:var(--sub)}
+
+/* 번호형 단계 (A 색감) */
+.tG .steps{counter-reset:st;justify-content:space-between;position:relative;margin:2px 4px 8px;gap:0}
+.tG .steps::before{content:"";position:absolute;left:14px;right:14px;top:13px;height:1px;background:#E2E2E2}
+.tG .steps span{counter-increment:st;flex:0 0 28px;height:28px;border-radius:50%;background:#fff;border:1px solid #DADADA;position:relative;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:600;color:#AAA}
+.tG .steps span::after{content:counter(st)}
+.tG .steps span.on{background:#2F2F2F;border-color:#2F2F2F;color:#fff}
+/* 스위치형 토글 버튼 */
+.tG .seg{background:#F2F2F2;border-radius:10px;padding:4px;gap:4px}
+.tG .seg button{border:none;background:transparent;height:44px;border-radius:7px;color:#888;font-weight:500;transition:background .15s,color .15s,box-shadow .15s}
+.tG .seg button.sel{background:#fff;color:#2B2B2B;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+body.tG .logo .e{color:#EE8F3E}
+.tG .addrArea{border-radius:8px}
+.tG .addrArea input.t{background:transparent}
+.tG input.t[readonly]{color:#555}
+
+</style>
+</head>
+<body class="tG">
+<div id="demoBar" class="demo hidden">미리보기 모드 — 시트에 기록되지 않습니다 (예시 이름: 홍길동 / 010-1234-5678)</div>
+<div class="wrap">
+  <header>
+    <div class="logo">단꿈<span class="e">e</span></div>
+    <h1>네이버 구매 고객<br>수강 등록 사전 확인</h1>
+    <p>원활한 수강권 지급을 위해 아래 내용을 확인해 주세요.<br>약 2~3분이면 마칠 수 있습니다.</p>
+  </header>
+
+  <div class="steps" id="steps"><span></span><span></span><span></span><span></span></div>
+
+  <!-- STEP 1 본인 확인 -->
+  <section class="card" id="s1">
+    <div class="stepLabel">1단계 · 구매 정보 확인</div>
+    <h2>구매하신 분의 정보를 입력해 주세요</h2>
+    <p class="desc">네이버에서 구매하실 때 입력하신 주문자(또는 받는 분) 이름과 휴대폰 번호를 입력해 주세요.</p>
+    <label class="f" for="name">이름</label>
+    <input class="t" id="name" autocomplete="name" placeholder="예) 홍길동">
+    <label class="f" for="phone">휴대폰 번호</label>
+    <input class="t" id="phone" type="tel" inputmode="numeric" maxlength="13" placeholder="010-0000-0000">
+    <div id="purchaseList" class="hidden" style="margin-top:20px">
+      <div class="q"><div class="qt">확인하실 구매 내역을 선택해 주세요</div><div id="purchaseOpts"></div></div>
+    </div>
+    <div class="err" id="err1"></div>
+    <button class="btn" id="btnLookup">확인</button>
+  </section>
+
+  <!-- STEP 2 회원가입 확인 -->
+  <section class="card hidden" id="s2">
+    <div class="stepLabel">2단계 · 단꿈e 회원가입 확인</div>
+    <div class="callBox" id="callBox">
+      <div class="txt"><b>전화로 안내받고 싶으신가요?</b><span id="callSub">화면 확인 대신 담당자가 전화로 도와드립니다.</span></div>
+      <button type="button" id="btnCall">전화 요청</button>
+    </div>
+    <div class="q">
+      <div class="qt">단꿈e 홈페이지에 회원가입을 하셨나요?</div>
+      <div class="seg" data-key="joined">
+        <button data-v="예">예, 했어요</button><button data-v="아니오">아직 안 했어요</button>
+      </div>
+    </div>
+
+    <div id="joinedArea" class="hidden">
+      <div class="q">
+        <div class="qt">가입하신 계정 정보를 입력해 주세요</div>
+        <label class="f" for="parentId" style="margin-top:4px">학부모 아이디</label>
+        <input class="t" id="parentId" autocomplete="off" autocapitalize="off" placeholder="단꿈e 학부모 아이디">
+        <label class="f" for="childName">자녀 이름</label>
+        <input class="t" id="childName" autocomplete="off" placeholder="수강할 자녀 이름">
+        <label class="f" for="childId">자녀 아이디</label>
+        <input class="t" id="childId" autocomplete="off" autocapitalize="off" placeholder="수강할 자녀 아이디">
+        <p class="hint">자녀 아이디는 학부모 계정 로그인 후 자녀 등록 화면에서 확인하실 수 있습니다.</p>
+      </div>
+
+      <div class="q">
+        <div class="qt">단꿈e 가입자(학부모) 이름이 네이버 구매자 또는 받는 분 이름과 같나요?</div>
+        <div class="seg" data-key="nameMatch">
+          <button data-v="예">네, 같아요</button><button data-v="아니오">달라요</button>
+        </div>
+        <p class="hint">강의가 정상 지급되려면 두 정보가 같아야 합니다.</p>
+      </div>
+
+      <div class="q">
+        <div class="qt" id="addrQ">단꿈e 회원정보에 배송받으실 주소를 등록하셨나요?</div>
+        <div class="seg" data-key="address">
+          <button data-v="등록함">등록했어요</button><button data-v="아직 안 함">아직 안 했어요</button>
+        </div>
+
+        <!-- 주소 미등록 시: 주소 직접 입력 + 동의 -->
+        <div id="addrArea" class="addrArea hidden">
+          <p class="addrTitle" id="addrTitle">받으실 주소를 입력해 주세요</p>
+          <label class="f" for="zip">우편번호</label>
+          <div class="zipRow">
+            <input class="t" id="zip" readonly placeholder="주소 검색을 눌러 주세요">
+            <button type="button" class="zipBtn" id="btnZip">주소 검색</button>
+          </div>
+          <label class="f" for="addr1">주소</label>
+          <input class="t" id="addr1" readonly placeholder="주소 검색 후 자동으로 입력됩니다">
+          <label class="f" for="addr2">상세 주소</label>
+          <input class="t" id="addr2" placeholder="동·호수 등 상세 주소">
+          <p class="hint">상세 주소가 없는 경우 '없음'이라고 입력해 주세요.</p>
+          <div class="note warn" id="addrWarn"></div>
+          <label class="chk"><input type="checkbox" id="addrAgree"><span>입력한 주소를 정확히 확인했으며, 위 내용에 동의합니다.</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="err" id="err2"></div>
+    <div class="row2">
+      <button class="btn line" data-back="1">이전</button>
+      <button class="btn" id="btnS2" disabled>다음</button>
+    </div>
+  </section>
+
+  <!-- STEP 3 무료체험 -->
+  <section class="card hidden" id="s3">
+    <div class="stepLabel">3단계 · 무료체험 선택</div>
+    <h2>무료체험 기간을 선택해 주세요</h2>
+    <p class="desc">정규 강의는 무료체험이 끝난 뒤부터 수강하실 수 있습니다.</p>
+    <div id="trialOpts">
+      <button class="opt" data-v="7일"><b>7일 무료체험</b><span>7일 동안 무료체험 후 정규 강의를 시작합니다.</span></button>
+      <button class="opt" data-v="3일"><b>3일 무료체험</b><span>무료체험 기간을 3일로 줄여 정규 강의를 더 빨리 시작합니다.</span></button>
+      <button class="opt" data-v="미진행"><b>무료체험 없이 바로 시작</b><span>무료체험을 진행하지 않습니다. 확인 후 2~3일 안에 정규 강의가 지급됩니다.</span></button>
+    </div>
+    <div class="note info">
+      <ul>
+        <li>무료체험은 시작 후 <b>일시 정지나 중간 중단이 불가능</b>합니다.</li>
+        <li>단꿈e 유료 강의를 이용하신 적이 있다면 무료체험은 추가로 제공되지 않습니다.</li>
+      </ul>
+    </div>
+    <div class="row2">
+      <button class="btn line" data-back="2">이전</button>
+      <button class="btn" id="btnS3" disabled>다음</button>
+    </div>
+  </section>
+
+  <!-- STEP 4 필수 안내 + 동의 -->
+  <section class="card hidden" id="s4">
+    <div class="stepLabel">4단계 · 필수 안내 확인</div>
+    <h2>마지막으로 필수 안내 사항을 확인해 주세요</h2>
+    <p class="desc">입력하신 내용을 확인하시고, <b>[확인하기]</b>를 눌러 안내 사항을 끝까지 읽어 주세요.</p>
+    <dl class="summary" id="summary"></dl>
+    <div class="confirmBox" id="confirmBox">
+      <div class="txt"><b>필수 안내 사항 <span class="req">(필수)</span></b><span id="confirmState">아직 확인하지 않았습니다</span></div>
+      <button id="btnNotice">확인하기</button>
+    </div>
+    <div class="err" id="err4"></div>
+    <div class="row2">
+      <button class="btn line" data-back="3">이전</button>
+      <button class="btn" id="btnSubmit" disabled>제출하기</button>
+    </div>
+  </section>
+
+  <!-- 완료 / 중단 / 이미 완료 -->
+  <section class="card hidden center" id="sEnd">
+    <div class="bigIcon" id="endIcon"></div>
+    <h2 id="endTitle"></h2>
+    <p class="desc" id="endDesc" style="margin-bottom:0"></p>
+    <div id="endBtns"></div>
+  </section>
+</div>
+
+<!-- 주소 검색 창 -->
+<div class="dim hidden" id="zipDim">
+  <div class="modal zipModal">
+    <div class="mHead zipHead"><h3>주소 검색</h3><button type="button" id="zipClose" aria-label="닫기">✕</button></div>
+    <div id="zipLayer" class="zipLayer"></div>
+  </div>
+</div>
+
+<!-- 팝업 -->
+<div class="dim hidden" id="dim">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="mHead"><h3 id="mTitle"></h3><p id="mSub" class="hidden"></p><div class="bar hidden" id="mBar"><i></i></div></div>
+    <div class="mBody" id="mBody"></div>
+    <div class="mFoot" id="mFoot"></div>
+  </div>
+</div>
+
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" async></script>
+<script>
+/* =========================================================
+   설정 — 필요 시 이 부분만 수정하시면 됩니다
+   ========================================================= */
+const CONFIG = {
+  API_URL: 'https://script.google.com/macros/s/AKfycbxzPTcgT7H8i5brIx1S2-GbdLCEw-ufp2AOp-72F9qtDJ9ZmL1qymowntHdRg61YsAI/exec',  // ← Apps Script 웹 앱 URL(…/exec). 비워 두면 '미리보기 모드'로 동작
+  HOME_URL: 'https://www.dankkume.com',  // 단꿈e 홈페이지(회원가입) 주소
+  KAKAO_URL: '',  // 단꿈e 카카오 채널 주소(있으면 버튼 표시)
+};
+
+/* 필수 안내 문구 — 구매상품에 '프리패스'가 포함되면 freepass, 그 외(학년/기본·심화 등)는 package */
+const NOTICES = {
+  freepass: {
+    title: '종합 프리패스 필수 안내 사항',
+    sections: [
+      { h: '무료체험 및 정규 강의 지급', items: [
+        '무료체험은 시스템상 <b>중간에 일시 정지나 임의 중단이 불가능</b>합니다.',
+        '구매하신 정규 강의는 <b>무료체험 종료 하루 전에 지급</b>되며, 실제 정규 수강은 무료체험이 완전히 종료된 후부터 가능합니다.',
+        '네이버 시스템상 발송 기한으로 인해, 정규 강의 지급 전에 \'발송 완료\'로 처리되어 안내 메시지가 갈 수 있습니다. 이 경우에도 안내된 일자에 강의는 정상 지급되니 안심하셔도 됩니다.',
+      ]},
+      { h: '웰컴 키트 배송', items: [
+        '종합 프리패스 구매 혜택으로 웰컴 키트를 보내 드립니다.',
+        '키트 발송을 위해 <b>단꿈e 회원정보에 배송받으실 주소를 꼭 등록</b>해 주세요. 주소가 등록되어 있지 않으면 발송이 보류됩니다.',
+      ]},
+      { h: '네이버 구매 확정 및 포인트', items: [
+        '네이버 구매 포인트는 강의 지급 후 <b>\'구매 확정\'을 해 주셔야</b> 정상 지급됩니다.',
+        '진행 중인 이벤트 혜택은 단꿈e 스마트스토어 공지사항에서 확인하실 수 있습니다.',
+      ]},
+      { h: '환불 규정', items: [
+        '정규 강의 시작 후 환불을 원하시면 <b>구매처(네이버)가 아닌 단꿈e로 먼저 연락</b>해 주셔야 합니다.',
+        '환불 금액은 결제 금액에서 실제 이용하신 기간만큼 제외한 후 산정되며, <b>총 수강 기간의 1/2이 지나면 환불이 불가</b>할 수 있습니다.',
+        '자세한 환불 규정은 단꿈e 홈페이지 이용 약관에서 확인하실 수 있습니다.',
+      ]},
+    ],
+  },
+  package: {
+    title: '패키지 상품 필수 안내 사항',
+    sections: [
+      { h: '무료체험 및 정규 강의 지급', items: [
+        '무료체험은 시스템상 <b>중간에 일시 정지나 임의 중단이 불가능</b>합니다.',
+        '구매하신 정규 강의는 <b>무료체험 종료 하루 전에 지급</b>되며, 실제 정규 수강은 무료체험이 완전히 종료된 후부터 가능합니다.',
+      ]},
+      { h: '교재 구성 및 배송', items: [
+        '본 패키지에는 <b>독서의 삼국지, 독해 과목 교재, 독서 시즌 2 교재가 포함되어 있지 않습니다.</b> 필요하시면 단꿈e몰에서 따로 구매하실 수 있습니다.',
+        '교재는 무료체험 종료 하루 전 또는 종료 다음 날부터 순서대로 발송되며, <b>발송일을 지정하거나 앞당기기는 어렵습니다.</b>',
+        '네이버 시스템상 발송 기한으로 인해 \'발송 지연\'으로 처리되어 안내가 갈 수 있으나, 정상적인 수강 세팅 과정이니 안심하셔도 됩니다.',
+        '교재 발송 후 운송장이 등록되면 마이페이지 &gt; 주문/배송 조회에서 확인하실 수 있습니다.',
+        '배송 주소를 잘못 입력하여 오배송된 경우에는 책임지기 어려우니, <b>주소를 정확히 입력</b>해 주세요.',
+      ]},
+      { h: '네이버 구매 확정 및 포인트', items: [
+        '네이버 구매 포인트는 강의 지급 후 <b>\'구매 확정\'을 해 주셔야</b> 정상 지급됩니다.',
+        '진행 중인 이벤트 혜택은 단꿈e 스마트스토어 공지사항에서 확인하실 수 있습니다.',
+      ]},
+      { h: '환불 규정', items: [
+        '본 상품은 강의와 교재가 결합된 패키지 상품으로, <b>교재만 부분 환불할 수 없습니다.</b>',
+        '단순 변심으로 인한 교재 반품은 <b>미사용 상태로 받으신 날부터 7일 이내</b>에 신청해 주셔야 하며, 교재 반품 시 강의도 함께 환불됩니다.',
+        '교재를 이미 사용하신 경우 결제 금액에서 <b>교재 정가를 먼저 차감</b>하고, 남은 금액에서 강의 이용 일수만큼 제외한 뒤 환불 금액이 산정됩니다.',
+        '강의 환불을 원하시면 단꿈e로 먼저 연락해 주세요. <b>총 수강 기간의 1/2이 지나면 환불이 불가</b>할 수 있습니다.',
+        '구매 확정 후 환불하시는 경우, 이벤트 혜택으로 지급된 포인트는 환불 금액에서 차감한 뒤 입금됩니다.',
+        '자세한 환불 규정은 단꿈e 홈페이지 이용 약관에서 확인하실 수 있습니다.',
+      ]},
+    ],
+  },
+};
+
+/* 주소 직접 입력 시 안내 — 상품별로 사은품(웰컴 키트) / 교재 */
+const ADDRESS_WARN = {
+  freepass: '입력하신 주소로 사은품(웰컴 키트)이 발송됩니다. <b>상세 주소 누락, 잘못된 입력 등 부정확한 주소로 인한 사은품 발송 오류(오배송·분실)에 대해서는 책임지지 않으니</b>, 주소를 정확히 확인해 주세요.',
+  package: '입력하신 주소로 교재가 발송됩니다. <b>상세 주소 누락, 잘못된 입력 등 부정확한 주소로 인한 교재 발송 오류(오배송·분실)에 대해서는 책임지지 않으니</b>, 주소를 정확히 확인해 주세요.',
+};
+
+/* =========================================================
+   동작 코드
+   ========================================================= */
+const DEMO = !CONFIG.API_URL;
+const $ = s => document.querySelector(s);
+const state = { name:'', phone:'', row:null, type:'freepass', product:'', answers:{}, noticeChecked:false, agreed:false, sending:false };
+
+if (DEMO) $('#demoBar').classList.remove('hidden');
+
+/* ---------- 화면 전환 ---------- */
+function go(n){
+  ['s1','s2','s3','s4','sEnd'].forEach(id => $('#'+id).classList.add('hidden'));
+  $(n === 'end' ? '#sEnd' : '#s'+n).classList.remove('hidden');
+  document.querySelectorAll('#steps span').forEach((s,i) => s.classList.toggle('on', n === 'end' || i < n));
+  $('#steps').classList.toggle('hidden', n === 'end');
+  if (n === 4) renderSummary();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => go(+b.dataset.back));
+
+/* ---------- 서버 통신 ---------- */
+async function api(payload){
+  if (DEMO) return mockApi(payload);
+  const res = await fetch(CONFIG.API_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload) });
+  return res.json();
+}
+function mockApi(p){
+  return new Promise(r => setTimeout(() => {
+    if (p.action === 'lookup'){
+      const ok = p.name.replace(/\s/g,'') === '홍길동' && p.phone.replace(/\D/g,'') === '01012345678';
+      if (!ok) return r({ ok:false, code:'NOT_FOUND' });
+      return r({ ok:true, items:[
+        { row:12, orderDate:'2026.11.05', product:'종합 프리패스(12개월)', type:'freepass', submitted:false },
+        { row:8,  orderDate:'2026.10.28', product:'4학년/기본', type:'package', submitted:false },
+      ]});
+    }
+    r({ ok:true });
+  }, 400));
+}
+
+/* ---------- 1단계: 본인 확인 ---------- */
+$('#phone').addEventListener('input', e => {
+  const d = e.target.value.replace(/\D/g,'').slice(0,11);
+  e.target.value = d.length < 4 ? d : d.length < 8 ? d.slice(0,3)+'-'+d.slice(3) : d.slice(0,3)+'-'+d.slice(3,d.length-4)+'-'+d.slice(-4);
+});
+['#name','#phone'].forEach(s => $(s).addEventListener('input', () => { $('#purchaseList').classList.add('hidden'); state.row = null; $('#btnLookup').textContent = '확인'; }));
+
+let pendingItems = [];
+$('#btnLookup').onclick = async () => {
+  const err = $('#err1'); err.textContent = '';
+  // 구매 내역 선택 단계라면 바로 진행
+  if (!$('#purchaseList').classList.contains('hidden')){
+    const sel = pendingItems.find(it => it.row === state.row);
+    if (!sel) { err.textContent = '구매 내역을 선택해 주세요.'; return; }
+    return startWith(sel);
+  }
+  const name = $('#name').value.trim(), phone = $('#phone').value.replace(/\D/g,'');
+  if (!name) { err.textContent = '이름을 입력해 주세요.'; return; }
+  if (!/^01\d{8,9}$/.test(phone)) { err.textContent = '휴대폰 번호를 정확히 입력해 주세요.'; return; }
+  setBusy('#btnLookup', true, '확인 중…');
+  try{
+    const r = await api({ action:'lookup', name, phone });
+    if (!r.ok){
+      err.innerHTML = r.code === 'NOT_FOUND'
+        ? '입력하신 정보로 구매 내역을 찾을 수 없습니다.<br>네이버 주문 시 입력한 주문자(또는 받는 분) 이름과 휴대폰 번호를 확인해 주세요.<br>구매 후 확인 명단에 등록되기까지 1~2일이 걸릴 수 있습니다.'
+        : '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
+      return;
+    }
+    state.name = name; state.phone = phone;
+    const open = r.items.filter(it => !it.submitted);
+    if (!open.length) return showEnd('done-already');
+    if (open.length === 1) return startWith(open[0]);
+    pendingItems = open;
+    $('#purchaseOpts').innerHTML = open.map(it =>
+      `<button class="opt" data-row="${it.row}"><b>${esc(it.product)}</b><span>구매일 ${esc(it.orderDate)}</span></button>`).join('');
+    $('#purchaseOpts').querySelectorAll('.opt').forEach(b => b.onclick = () => {
+      $('#purchaseOpts').querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
+      b.classList.add('sel'); state.row = +b.dataset.row;
+    });
+    $('#purchaseList').classList.remove('hidden');
+  } catch(e){
+    err.textContent = '연결에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+  } finally {
+    setBusy('#btnLookup', false);
+    if (!$('#purchaseList').classList.contains('hidden')) $('#btnLookup').textContent = '선택한 내역으로 진행';
+  }
+};
+function startWith(item){
+  state.row = item.row; state.type = item.type; state.product = item.product;
+  $('#callSub').textContent = item.callRequested
+    ? '이미 전화 안내를 요청하셨습니다. 기다리지 않고 지금 직접 진행하셔도 됩니다.'
+    : '화면 확인 대신 담당자가 전화로 도와드립니다.';
+  $('#btnCall').classList.toggle('hidden', !!item.callRequested);
+  $('#addrQ').textContent = item.type === 'package'
+    ? '교재를 받으실 주소를 단꿈e 회원정보에 등록하셨나요?'
+    : '웰컴 키트를 받으실 주소를 단꿈e 회원정보에 등록하셨나요?';
+  $('#addrWarn').innerHTML = ADDRESS_WARN[item.type];
+  $('#addrTitle').textContent = (item.type === 'package' ? '교재' : '사은품(웰컴 키트)') + '를 받으실 주소를 입력해 주세요';
+  go(2);
+}
+
+/* ---------- 2단계: 회원가입 확인 ---------- */
+document.querySelectorAll('.seg').forEach(seg => {
+  seg.querySelectorAll('button').forEach(b => b.onclick = () => {
+    const key = seg.dataset.key, v = b.dataset.v;
+    seg.querySelectorAll('button').forEach(x => x.classList.toggle('sel', x === b));
+    state.answers[key] = v;
+    if (key === 'joined'){
+      if (v === '아니오') return popupNotJoined();
+      $('#joinedArea').classList.remove('hidden');
+    }
+    if (key === 'nameMatch' && v === '아니오') return popupNameMismatch();
+    if (key === 'address') $('#addrArea').classList.toggle('hidden', v !== '아직 안 함');
+    checkS2();
+  });
+});
+['#parentId','#childName','#childId','#zip','#addr1','#addr2'].forEach(s => $(s).addEventListener('input', checkS2));
+$('#addrAgree').addEventListener('change', checkS2);
+function addrOk(){
+  if (state.answers.address !== '아직 안 함') return true;
+  return !!($('#addr1').value.trim() && $('#addr2').value.trim() && $('#addrAgree').checked);
+}
+function checkS2(){
+  const a = state.answers;
+  const ok = a.joined === '예' && a.nameMatch === '예' && !!a.address && addrOk() &&
+    $('#parentId').value.trim() && $('#childName').value.trim() && $('#childId').value.trim();
+  $('#btnS2').disabled = !ok;
+}
+$('#btnS2').onclick = () => {
+  const a = state.answers;
+  a.parentId = $('#parentId').value.trim();
+  a.childName = $('#childName').value.trim();
+  a.childId = $('#childId').value.trim();
+  if (a.address === '아직 안 함'){
+    a.addrZip = $('#zip').value.trim(); a.addrBase = $('#addr1').value.trim(); a.addrDetail = $('#addr2').value.trim();
+    a.addrAgree = $('#addrAgree').checked;
+  } else {
+    a.addrZip = a.addrBase = a.addrDetail = ''; a.addrAgree = false;
+  }
+  go(3);
+};
+
+/* 주소 검색 (다음 우편번호 서비스) — 불러오지 못하면 직접 입력으로 전환 */
+function manualAddress(){
+  ['#zip','#addr1'].forEach(s => $(s).removeAttribute('readonly'));
+  $('#zip').placeholder = '우편번호 (모르시면 비워 두셔도 됩니다)';
+  $('#addr1').placeholder = '도로명 또는 지번 주소';
+  $('#btnZip').classList.add('hidden');
+  $('#addr1').focus();
+}
+$('#btnZip').onclick = () => {
+  if (!(window.daum && daum.Postcode)) return manualAddress();
+  const layer = $('#zipLayer'); layer.innerHTML = '';
+  new daum.Postcode({
+    width:'100%', height:'100%',
+    oncomplete: d => {
+      $('#zip').value = d.zonecode;
+      $('#addr1').value = (d.roadAddress || d.jibunAddress) + (d.buildingName ? ` (${d.buildingName})` : '');
+      closeZip(); $('#addr2').focus(); checkS2();
+    },
+  }).embed(layer);
+  $('#zipDim').classList.remove('hidden'); document.body.style.overflow = 'hidden';
+};
+function closeZip(){ $('#zipDim').classList.add('hidden'); document.body.style.overflow = ''; }
+$('#zipClose').onclick = closeZip;
+
+function resetSeg(key){
+  delete state.answers[key];
+  document.querySelectorAll(`.seg[data-key="${key}"] button`).forEach(x => x.classList.remove('sel'));
+}
+
+function popupNotJoined(){
+  openModal({
+    title: '단꿈e 회원가입 후 다시 진행해 주세요',
+    body: `<p>수강권은 <b>단꿈e 회원 계정</b>으로 지급되기 때문에, 회원가입을 먼저 해 주셔야 합니다.</p>
+      <ul>
+        <li>단꿈e 홈페이지에서 <b>학부모 계정</b>으로 가입한 뒤, 자녀 정보를 등록해 주세요.</li>
+        <li>강의가 정상 지급되려면 <b>네이버 구매자(또는 받는 분)와 같은 이름·연락처</b>로 가입해 주셔야 합니다.</li>
+        <li>가입을 마치신 뒤 <b>이 링크로 다시 들어와</b> 확인을 진행해 주세요.</li>
+      </ul>`,
+    buttons: [
+      { label:'단꿈e 홈페이지로 이동', href: CONFIG.HOME_URL },
+      { label:'확인', cls:'line', onClick: () => { closeModal(); resetSeg('joined'); $('#joinedArea').classList.add('hidden'); showEnd('stop-join'); } },
+    ],
+  });
+}
+function popupNameMismatch(){
+  openModal({
+    title: '가입 명의 변경 후 다시 진행해 주세요',
+    body: `<p>강의가 정상 지급되려면 <b>단꿈e 가입자 정보와 네이버 구매자(또는 받는 분) 정보가 같아야</b> 합니다.</p>
+      <ul>
+        <li>지금 가입된 계정을 계속 쓰시려면, 단꿈e 가입 명의를 네이버 구매 정보와 같게 변경해 주셔야 합니다.</li>
+        <li>명의 변경을 위해 <b>가족관계증명서 또는 주민등록등본</b> 등 가족 관계를 확인할 수 있는 서류를 <b>단꿈e 카카오 채널</b>로 보내 주세요.</li>
+        <li>서류를 보내실 때는 개인정보 보호를 위해 <b>주민등록번호 뒷자리를 꼭 가려서</b> 보내 주세요.</li>
+        <li>명의 변경이 끝나면 이 링크로 다시 들어와 확인을 진행해 주세요.</li>
+      </ul>`,
+    buttons: [
+      ...(CONFIG.KAKAO_URL ? [{ label:'카카오 채널로 문의하기', href: CONFIG.KAKAO_URL }] : []),
+      { label:'확인', cls: CONFIG.KAKAO_URL ? 'line' : '', onClick: () => { closeModal(); resetSeg('nameMatch'); checkS2(); showEnd('stop-name'); } },
+    ],
+  });
+}
+
+/* ---------- 전화 안내 요청 ---------- */
+function fmtPhone(d){ return d.length === 11 ? `${d.slice(0,3)}-${d.slice(3,7)}-${d.slice(7)}` : `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`; }
+$('#btnCall').onclick = () => {
+  openModal({
+    title: '전화로 안내받으시겠어요?',
+    body: `<p>담당자가 아래 번호로 전화를 드려 <b>회원가입 확인, 무료체험 일정, 필수 안내 사항</b>을 도와드립니다.</p>
+      <div class="phoneLine">연락받으실 번호<b>${esc(fmtPhone(state.phone))}</b></div>
+      <p class="hint" style="margin-top:12px">요청 순서대로 연락드리며, 전화를 기다리지 않고 언제든 이 링크로 다시 들어와 직접 진행하셔도 됩니다.</p>`,
+    buttons: [
+      { label:'전화 요청하기', onClick: sendCallRequest },
+      { label:'화면에서 직접 할게요', cls:'line', onClick: closeModal },
+    ],
+  });
+};
+async function sendCallRequest(e){
+  const b = e.currentTarget; if (b.disabled) return;
+  b.disabled = true; b.textContent = '요청 중…';
+  try{
+    const r = await api({ action:'callRequest', name:state.name, phone:state.phone, row:state.row });
+    closeModal();
+    if (r.ok) return showEnd('call');
+    if (r.code === 'ALREADY') return showEnd('done-already');
+    $('#err2').textContent = '전화 요청에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+  } catch(err){
+    closeModal(); $('#err2').textContent = '연결에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+  }
+}
+
+/* ---------- 3단계: 무료체험 ---------- */
+document.querySelectorAll('#trialOpts .opt').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#trialOpts .opt').forEach(x => x.classList.toggle('sel', x === b));
+  state.answers.trial = b.dataset.v;
+  $('#btnS3').disabled = false;
+});
+$('#btnS3').onclick = () => go(4);
+
+/* ---------- 4단계: 필수 안내 + 동의 ---------- */
+function renderSummary(){
+  const a = state.answers;
+  const rows = [
+    ['구매 상품', state.product],
+    ['학부모 아이디', a.parentId],
+    ['자녀', `${a.childName} (${a.childId})`],
+    ['배송 주소', a.address === '등록함' ? '단꿈e 회원정보에 등록함'
+      : `${a.addrZip ? '(' + a.addrZip + ') ' : ''}${a.addrBase} ${a.addrDetail}`],
+    ['무료체험', a.trial === '미진행' ? '진행하지 않음' : a.trial],
+  ];
+  $('#summary').innerHTML = rows.map(([k,v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('');
+}
+
+$('#btnNotice').onclick = () => {
+  const n = NOTICES[state.type];
+  const body = n.sections.map((s,i) =>
+    `<h4><em>${i+1}</em>${s.h}</h4><ul>${s.items.map(t => `<li>${t}</li>`).join('')}</ul>`).join('')
+    + `<div class="end">— 안내 사항의 끝입니다 —</div>`;
+  openModal({ title: n.title, sub: '끝까지 내려서 모든 내용을 확인해 주세요.', body, mode:'notice' });
+};
+
+function setAgreed(){
+  state.noticeChecked = true; state.agreed = true;
+  $('#confirmBox').classList.add('done');
+  $('#confirmState').textContent = '확인 및 수강권 지급 동의 완료';
+  $('#btnNotice').textContent = '다시 보기';
+  $('#btnSubmit').disabled = false;
+  $('#err4').textContent = '';
+}
+
+$('#btnSubmit').onclick = async () => {
+  if (!state.agreed || state.sending) return;
+  state.sending = true; setBusy('#btnSubmit', true, '제출 중…');
+  try{
+    const r = await api({ action:'submit', name:state.name, phone:state.phone, row:state.row,
+      answers:{ ...state.answers, noticeChecked:state.noticeChecked, agreed:state.agreed } });
+    if (r.ok) return showEnd('done');
+    if (r.code === 'ALREADY') return showEnd('done-already');
+    $('#err4').textContent = '제출에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+  } catch(e){
+    $('#err4').textContent = '연결에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+  } finally {
+    state.sending = false; setBusy('#btnSubmit', false);
+  }
+};
+
+/* ---------- 마지막 화면 ---------- */
+function showEnd(kind){
+  const T = {
+    'done': ['ok','✓','확인이 완료되었습니다','소중한 시간 내 주셔서 감사합니다.<br>담당자가 내용을 확인한 뒤 선택하신 일정에 맞춰 수강권을 지급해 드립니다.<br><br>궁금하신 점은 단꿈e 카카오 채널 또는 대표번호로 문의해 주세요.'],
+    'done-already': ['ok','✓','이미 확인을 완료하셨습니다','담당자가 확인 후 수강권을 지급해 드립니다.<br>입력하신 내용을 바꾸고 싶으시면 단꿈e 카카오 채널로 문의해 주세요.'],
+    'call': ['ok','✓','전화 안내 요청이 접수되었습니다','담당자가 요청 순서대로 연락드리겠습니다.<br>전화를 기다리지 않고 직접 진행하시려면<br>이 링크로 다시 들어와 주세요.'],
+    'stop-join': ['stop','!','회원가입 후 다시 진행해 주세요','단꿈e 홈페이지에서 회원가입과 자녀 등록을 마치신 뒤,<br>이 링크로 다시 들어와 주세요.'],
+    'stop-name': ['stop','!','명의 변경 후 다시 진행해 주세요','필요 서류를 단꿈e 카카오 채널로 보내 주시고,<br>명의 변경이 끝나면 이 링크로 다시 들어와 주세요.'],
+  }[kind];
+  $('#endIcon').className = 'bigIcon ' + T[0]; $('#endIcon').textContent = T[1];
+  $('#endTitle').textContent = T[2]; $('#endDesc').innerHTML = T[3];
+  const btns = [];
+  if (kind === 'stop-join') btns.push(`<a class="btn" style="line-height:54px;text-decoration:none" href="${CONFIG.HOME_URL}" target="_blank" rel="noopener">단꿈e 홈페이지로 이동</a>`);
+  if (kind === 'stop-name' && CONFIG.KAKAO_URL) btns.push(`<a class="btn" style="line-height:54px;text-decoration:none" href="${CONFIG.KAKAO_URL}" target="_blank" rel="noopener">카카오 채널로 문의하기</a>`);
+  if (kind.startsWith('stop')) btns.push(`<button class="btn ghost" onclick="go(2)">이전 화면으로 돌아가기</button>`);
+  $('#endBtns').innerHTML = btns.join('');
+  go('end');
+}
+
+/* ---------- 팝업 ---------- */
+function openModal({ title, sub, body, buttons, mode }){
+  $('#mTitle').textContent = title;
+  $('#mSub').textContent = sub || ''; $('#mSub').classList.toggle('hidden', !sub);
+  $('#mBar').classList.toggle('hidden', mode !== 'notice');
+  $('#mBody').innerHTML = body; $('#mBody').scrollTop = 0;
+  const foot = $('#mFoot'); foot.innerHTML = '';
+  if (mode === 'notice'){
+    foot.innerHTML = `<div class="scrollMsg" id="scrollMsg">↓ 아래로 내려 끝까지 확인해 주세요</div>
+      <div id="agreeArea" class="hidden">
+        <div class="agreeQ">위 필수 안내 사항을 모두 확인했으며,<br>수강권 지급에 동의하십니까?</div>
+        <div class="row2"><button class="btn line" id="mLater">닫기</button><button class="btn" id="mAgree">네, 동의합니다</button></div>
+      </div>`;
+    $('#mLater').onclick = closeModal;
+    $('#mAgree').onclick = () => { setAgreed(); closeModal(); };
+    const el = $('#mBody'), bar = $('#mBar i');
+    const onScroll = () => {
+      const max = el.scrollHeight - el.clientHeight;
+      const p = max <= 0 ? 1 : el.scrollTop / max;
+      bar.style.width = Math.min(100, p*100) + '%';
+      if (p >= 0.98 || max - el.scrollTop < 12){
+        $('#scrollMsg').classList.add('hidden'); $('#agreeArea').classList.remove('hidden');
+      }
+    };
+    el.onscroll = onScroll;
+    requestAnimationFrame(onScroll);
+  } else {
+    $('#mBody').onscroll = null;
+    (buttons || []).forEach(b => {
+      const el = document.createElement(b.href ? 'a' : 'button');
+      el.className = 'btn ' + (b.cls || ''); el.textContent = b.label;
+      if (b.href){ el.href = b.href; el.target = '_blank'; el.rel = 'noopener'; el.style.cssText = 'line-height:54px;text-align:center;text-decoration:none'; }
+      else el.onclick = b.onClick;
+      foot.appendChild(el);
+    });
+    foot.firstChild && (foot.firstChild.style.marginTop = '0');
+  }
+  $('#dim').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(){ $('#dim').classList.add('hidden'); document.body.style.overflow = ''; }
+
+/* ---------- 공통 ---------- */
+function setBusy(sel, on, txt){
+  const b = $(sel);
+  if (on){ b.dataset.t = b.textContent; b.textContent = txt; b.disabled = true; }
+  else { if (b.dataset.t) b.textContent = b.dataset.t; b.disabled = false; }
+}
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+go(1);
+</script>
+</body>
+</html>
