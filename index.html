@@ -387,7 +387,7 @@ const NOTICES = {
       { h: '교재 구성 및 배송', items: [
         '{BOOKS}',
         '패키지에 포함되지 않은 교재나 도서가 필요하신 경우 <b>단꿈e몰에서 별도로 구매</b>하실 수 있습니다.',
-        '교재는 앞에서 확인하신 배송 주소로 발송됩니다.',
+        '교재와 웰컴 키트는 앞에서 확인하신 배송 주소로 함께 발송됩니다.',
       ]},
       { h: '네이버 구매 확정 및 포인트', items: [
         '네이버 구매 포인트는 강의 지급 후 <b>\'구매 확정\'을 해 주셔야</b> 정상 지급됩니다.',
@@ -405,21 +405,26 @@ const NOTICES = {
   },
 };
 
-/* 패키지 교재 구성 — 상품명의 '기본/심화'로 구분, {G}는 상품명의 학년 */
+/* 패키지 교재 구성
+   - 학년 기준: 3~4학년은 한국사 첫걸음·독해 포함, 5~6학년은 한국사 기초/실력 포함
+   - 기본/심화: 논술 교재의 기본·심화만 구분
+   - {G}: 상품명의 학년, {L}: 상품명의 기본/심화 */
 const PACKAGE_BOOKS = {
-  '기본': '수학 {G}학년 1~2학기, 한국사 첫걸음, 독해, 논술 기본, 독서 1~12단원',
-  '심화': '수학 {G}학년 1~2학기, 한국사 기초/실력, 논술 심화, 독서 1~12단원',
+  low:  '수학 {G}학년 1~2학기, 한국사 첫걸음, 독해, 논술 {L}, 독서 1~12단원',  // 3~4학년
+  high: '수학 {G}학년 1~2학기, 한국사 기초/실력, 논술 {L}, 독서 1~12단원',      // 5~6학년
 };
 function packageBooksText(product){
-  const m = [...String(product).matchAll(/([1-6])\s*학년\s*\/\s*(기본|심화)/g)].pop(); // 옵션 변경(▶) 시 마지막 값 기준
-  if (!m || !PACKAGE_BOOKS[m[2]]) return '구매하신 패키지 구성에 맞는 교재가 발송됩니다.';
-  return `구매하신 패키지(<b>${m[1]}학년/${m[2]}</b>)에는 <b>[${PACKAGE_BOOKS[m[2]].replace('{G}', m[1])}]</b> 교재가 포함되어 있습니다.`;
+  const m = [...String(product).matchAll(/([3-6])\s*학년\s*\/\s*(기본|심화)/g)].pop(); // 옵션 변경(▶) 시 마지막 값 기준
+  if (!m) return '구매하신 패키지 구성에 맞는 교재가 발송됩니다.';
+  const g = +m[1], level = m[2];
+  const books = PACKAGE_BOOKS[g <= 4 ? 'low' : 'high'].replace('{G}', g).replace('{L}', level);
+  return `구매하신 패키지(<b>${g}학년/${level}</b>)에는 <b>[${books}]</b> 교재가 포함되어 있습니다.`;
 }
 
 /* 주소 직접 입력 시 안내 — 상품별로 사은품(웰컴 키트) / 교재 */
 const ADDRESS_WARN = {
   freepass: '입력하신 주소로 사은품(웰컴 키트)이 발송됩니다. <b>상세 주소 누락, 잘못된 입력 등 부정확한 주소로 인한 사은품 발송 오류(오배송·분실)에 대해서는 책임지지 않으니</b>, 주소를 정확히 확인해 주세요.',
-  package: '입력하신 주소로 교재가 발송됩니다. <b>상세 주소 누락, 잘못된 입력 등 부정확한 주소로 인한 교재 발송 오류(오배송·분실)에 대해서는 책임지지 않으니</b>, 주소를 정확히 확인해 주세요.',
+  package: '입력하신 주소로 교재와 웰컴 키트가 발송됩니다. <b>상세 주소 누락, 잘못된 입력 등 부정확한 주소로 인한 교재·웰컴 키트 발송 오류(오배송·분실)에 대해서는 책임지지 않으니</b>, 주소를 정확히 확인해 주세요.',
 };
 
 /* =========================================================
@@ -522,24 +527,25 @@ function startWith(item){
     // 패키지: 네이버 배송지(주소1) 앞부분을 보여 주고 확인
     b1.dataset.v = '네이버 주소'; b1.textContent = '네, 맞아요';
     b2.dataset.v = '다른 주소';   b2.textContent = '다른 주소로 받을게요';
+    $('#addrQ').closest('.q').classList.remove('hidden');
     if (item.addrMasked){
-      $('#addrQ').textContent = '교재를 아래 주소로 받으시겠어요?';
+      $('#addrQ').textContent = '교재와 웰컴 키트를 아래 주소로 받으시겠어요?';
       $('#naverAddrTxt').textContent = item.addrMasked;
       $('#naverAddr').classList.remove('hidden');
     } else {
-      // 시트에 주소가 없으면 바로 입력받기
-      $('#addrQ').textContent = '교재를 받으실 주소를 입력해 주세요.';
-      $('#addrSeg').classList.add('hidden');
-      state.answers.address = '다른 주소'; $('#addrArea').classList.remove('hidden');
+      // 시트 주소를 받아오지 못한 경우: 주소 질문 없이 네이버 배송지로 진행
+      $('#addrQ').closest('.q').classList.add('hidden');
+      state.answers.address = '네이버 주소';
     }
   } else {
+    $('#addrQ').closest('.q').classList.remove('hidden');
     b1.dataset.v = '등록함';     b1.textContent = '등록했어요';
     b2.dataset.v = '아직 안 함'; b2.textContent = '아직 안 했어요';
     $('#addrQ').textContent = '웰컴 키트를 받으실 주소를 단꿈e 회원정보에 등록하셨나요?';
   }
   state.addrMasked = item.addrMasked || '';
   $('#addrWarn').innerHTML = ADDRESS_WARN[item.type];
-  $('#addrTitle').textContent = (item.type === 'package' ? '교재' : '사은품(웰컴 키트)') + '를 받으실 주소를 입력해 주세요';
+  $('#addrTitle').textContent = item.type === 'package' ? '교재와 웰컴 키트를 받으실 주소를 입력해 주세요' : '사은품(웰컴 키트)를 받으실 주소를 입력해 주세요';
   go(2);
 }
 
@@ -689,7 +695,7 @@ function renderSummary(){
     ['학부모 아이디', a.parentId],
     ['자녀', `${a.childName} (${a.childId})`],
     ['배송 주소', a.address === '등록함' ? '단꿈e 회원정보에 등록함'
-      : a.address === '네이버 주소' ? `네이버 배송지 (${state.addrMasked})`
+      : a.address === '네이버 주소' ? (state.addrMasked ? `네이버 배송지 (${state.addrMasked})` : '네이버 주문 배송지')
       : `${a.addrZip ? '(' + a.addrZip + ') ' : ''}${a.addrBase} ${a.addrDetail}`],
     ['무료체험', a.trial === '미진행' ? '진행하지 않음' : a.trial],
   ];
