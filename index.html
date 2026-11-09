@@ -29,7 +29,7 @@
 
   .card{background:var(--card);border-radius:16px;padding:22px 18px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
   .card h2{font-size:18px;font-weight:700;line-height:1.45;margin-bottom:6px}
-  .card .desc{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:18px}
+  .card .desc{word-break:keep-all;font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:18px}
   .hidden{display:none!important}
 
   label.f{display:block;font-size:14px;font-weight:600;margin:16px 0 7px}
@@ -149,6 +149,7 @@ body.tG{--orange:#D98B61;--orange-dark:#B86E46;--orange-soft:#FBF3EE;--ink:#2B2B
 .tG .opt.sel b{color:#2B2B2B}
 .tG .btn{background:#2F2F2F;border-radius:8px;font-weight:600}
 .tG .btn.line{background:#fff;color:#2B2B2B;border:1px solid #DADADA}
+.tG .btn.ghost{background:transparent;color:var(--sub);border:none}
 .tG .btn:disabled{background:#E6E6E6;color:#AAA}
 .tG .confirmBox{border:1px solid var(--line);border-radius:8px}
 .tG .confirmBox button{background:#fff;color:#2B2B2B;border:1px solid #2B2B2B}
@@ -232,7 +233,7 @@ body.tG .logo .e{color:#EE8F3E}
       </div>
 
       <div class="q">
-        <div class="qt">단꿈e 가입자(학부모) 이름이 네이버 구매자 또는 받는 분 이름과 같나요?</div>
+        <div class="qt">단꿈e 가입자(학부모)의 이름과 연락처가 네이버 구매자 또는 받는 분과 같나요?</div>
         <div class="seg" data-key="nameMatch">
           <button data-v="예">네, 같아요</button><button data-v="아니오">달라요</button>
         </div>
@@ -595,17 +596,16 @@ function popupNotJoined(){
 }
 function popupNameMismatch(){
   openModal({
-    title: '가입 명의 변경 후 다시 진행해 주세요',
+    title: '가입 명의 확인이 필요합니다',
     body: `<p>강의가 정상 지급되려면 <b>단꿈e 가입자 정보와 네이버 구매자(또는 받는 분) 정보가 같아야</b> 합니다.</p>
+      <p>현재 단꿈e 계정으로 수강하시려면 <b>네이버 주문을 취소한 뒤 다시 구매</b>해 주세요.</p>
       <ul>
-        <li>지금 가입된 계정을 계속 쓰시려면, 단꿈e 가입 명의를 네이버 구매 정보와 같게 변경해 주셔야 합니다.</li>
-        <li>명의 변경을 위해 <b>가족관계증명서 또는 주민등록등본</b> 등 가족 관계를 확인할 수 있는 서류를 <b>단꿈e 카카오 채널</b>로 보내 주세요.</li>
-        <li>서류를 보내실 때는 개인정보 보호를 위해 <b>주민등록번호 뒷자리를 꼭 가려서</b> 보내 주세요.</li>
-        <li>명의 변경이 끝나면 이 링크로 다시 들어와 확인을 진행해 주세요.</li>
+        <li>기존 주문은 네이버에서 취소 신청해 주시면 확인 후 승인해 드립니다.</li>
+        <li>재구매 시 <b>구매자 또는 받는 분의 이름과 연락처가 단꿈e 가입 정보와 일치해야만</b> 수강권 지급이 가능합니다.</li>
+        <li>재구매 내역이 등록되면 이 링크에서 새 구매 내역으로 진행하실 수 있습니다.</li>
       </ul>`,
     buttons: [
-      ...(CONFIG.KAKAO_URL ? [{ label:'카카오 채널로 문의하기', href: CONFIG.KAKAO_URL }] : []),
-      { label:'확인', cls: CONFIG.KAKAO_URL ? 'line' : '', onClick: () => { closeModal(); resetSeg('nameMatch'); checkS2(); showEnd('stop-name'); } },
+      { label:'확인', onClick: () => { closeModal(); resetSeg('nameMatch'); checkS2(); showEnd('stop-name'); } },
     ],
   });
 }
@@ -700,13 +700,12 @@ function showEnd(kind){
     'done-already': ['ok','✓','이미 확인을 완료하셨습니다','담당자가 확인 후 수강권을 지급해 드립니다.<br>입력하신 내용을 바꾸고 싶으시면 단꿈e 카카오 채널로 문의해 주세요.'],
     'call': ['ok','✓','전화 안내 요청이 접수되었습니다','담당자가 요청 순서대로 연락드리겠습니다.<br>전화를 기다리지 않고 직접 진행하시려면<br>이 링크로 다시 들어와 주세요.'],
     'stop-join': ['stop','!','회원가입 후 다시 진행해 주세요','단꿈e 홈페이지에서 회원가입과 자녀 등록을 마치신 뒤,<br>이 링크로 다시 들어와 주세요.'],
-    'stop-name': ['stop','!','명의 변경 후 다시 진행해 주세요','필요 서류를 단꿈e 카카오 채널로 보내 주시고,<br>명의 변경이 끝나면 이 링크로 다시 들어와 주세요.'],
+    'stop-name': ['stop','!','네이버 재구매 후 다시 진행해 주세요','기존 주문을 취소하신 뒤,<br>단꿈e 가입 정보와 같은 이름·연락처로 네이버에서<br>다시 구매해 주세요.<br><br>재구매 내역이 등록되면<br>이 링크로 다시 들어와 주세요.'],
   }[kind];
   $('#endIcon').className = 'bigIcon ' + T[0]; $('#endIcon').textContent = T[1];
   $('#endTitle').textContent = T[2]; $('#endDesc').innerHTML = T[3];
   const btns = [];
   if (kind === 'stop-join') btns.push(`<a class="btn" style="line-height:54px;text-decoration:none" href="${CONFIG.HOME_URL}" target="_blank" rel="noopener">단꿈e 홈페이지로 이동</a>`);
-  if (kind === 'stop-name' && CONFIG.KAKAO_URL) btns.push(`<a class="btn" style="line-height:54px;text-decoration:none" href="${CONFIG.KAKAO_URL}" target="_blank" rel="noopener">카카오 채널로 문의하기</a>`);
   if (kind.startsWith('stop')) btns.push(`<button class="btn ghost" onclick="go(2)">이전 화면으로 돌아가기</button>`);
   $('#endBtns').innerHTML = btns.join('');
   go('end');
