@@ -119,6 +119,10 @@
   .phoneLine{margin-top:14px;padding:14px;border-radius:8px;background:#F6F6F6;text-align:center;font-size:14px;color:var(--sub)}
   .phoneLine b{display:block;font-size:19px;color:var(--ink);margin-top:4px;letter-spacing:.5px}
 
+  .naverAddr{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:-2px 0 12px;background:#FAFAFA}
+  .naverAddr span{display:block;font-size:12.5px;color:var(--muted)}
+  .naverAddr b{display:block;font-size:15.5px;margin-top:3px;word-break:keep-all}
+
   /* ---------- 주소 입력 ---------- */
   .addrArea{margin-top:16px;padding:16px;border:1px solid var(--line);border-radius:12px;background:#FCFCFC}
   .addrTitle{font-size:14.5px;font-weight:700}
@@ -242,7 +246,8 @@ body.tG .logo .e{color:#EE8F3E}
 
       <div class="q">
         <div class="qt" id="addrQ">단꿈e 회원정보에 배송받으실 주소를 등록하셨나요?</div>
-        <div class="seg" data-key="address">
+        <div class="naverAddr hidden" id="naverAddr"><span>네이버 주문 시 입력하신 배송지</span><b id="naverAddrTxt"></b></div>
+        <div class="seg" data-key="address" id="addrSeg">
           <button data-v="등록함">등록했어요</button><button data-v="아직 안 함">아직 안 했어요</button>
         </div>
 
@@ -380,27 +385,36 @@ const NOTICES = {
         '구매하신 정규 강의는 <b>무료체험 종료 하루 전에 지급</b>되며, 실제 정규 수강은 무료체험이 완전히 종료된 후부터 가능합니다.',
       ]},
       { h: '교재 구성 및 배송', items: [
-        '본 패키지에는 <b>독서의 삼국지, 독해 과목 교재, 독서 시즌 2 교재가 포함되어 있지 않습니다.</b> 필요하시면 단꿈e몰에서 따로 구매하실 수 있습니다.',
-        '교재는 무료체험 종료 하루 전 또는 종료 다음 날부터 순서대로 발송되며, <b>발송일을 지정하거나 앞당기기는 어렵습니다.</b>',
-        '네이버 시스템상 발송 기한으로 인해 \'발송 지연\'으로 처리되어 안내가 갈 수 있으나, 정상적인 수강 세팅 과정이니 안심하셔도 됩니다.',
-        '교재 발송 후 운송장이 등록되면 마이페이지 &gt; 주문/배송 조회에서 확인하실 수 있습니다.',
-        '배송 주소를 잘못 입력하여 오배송된 경우에는 책임지기 어려우니, <b>주소를 정확히 입력</b>해 주세요.',
+        '{BOOKS}',
+        '패키지에 포함되지 않은 교재나 도서가 필요하신 경우 <b>단꿈e몰에서 별도로 구매</b>하실 수 있습니다.',
+        '교재는 앞에서 확인하신 배송 주소로 발송됩니다.',
       ]},
       { h: '네이버 구매 확정 및 포인트', items: [
         '네이버 구매 포인트는 강의 지급 후 <b>\'구매 확정\'을 해 주셔야</b> 정상 지급됩니다.',
         '진행 중인 이벤트 혜택은 단꿈e 스마트스토어 공지사항에서 확인하실 수 있습니다.',
       ]},
       { h: '환불 규정', items: [
-        '본 상품은 강의와 교재가 결합된 패키지 상품으로, <b>교재만 부분 환불할 수 없습니다.</b>',
-        '단순 변심으로 인한 교재 반품은 <b>미사용 상태로 받으신 날부터 7일 이내</b>에 신청해 주셔야 하며, 교재 반품 시 강의도 함께 환불됩니다.',
-        '교재를 이미 사용하신 경우 결제 금액에서 <b>교재 정가를 먼저 차감</b>하고, 남은 금액에서 강의 이용 일수만큼 제외한 뒤 환불 금액이 산정됩니다.',
-        '강의 환불을 원하시면 단꿈e로 먼저 연락해 주세요. <b>총 수강 기간의 1/2이 지나면 환불이 불가</b>할 수 있습니다.',
-        '구매 확정 후 환불하시는 경우, 이벤트 혜택으로 지급된 포인트는 환불 금액에서 차감한 뒤 입금됩니다.',
+        '본 상품은 강의와 교재가 결합된 패키지 상품으로, <b>교재만 부분 환불하는 것은 어렵습니다.</b>',
+        '교재 수령 후 단순 변심으로 인한 반품을 원하시는 경우, 단꿈e 반품 기준에 따라 <b>미사용 상태에서 수령일로부터 7일 이내</b>에 신청해 주셔야 하며, 교재 반품 시 패키지에 포함된 강의도 함께 환불됩니다.',
+        '교재를 이미 사용하신 경우에는 결제하신 전체 금액에서 <b>교재 정가를 차감</b>하며, 차감 후 남은 금액에서 강의 이용 일수에 따른 금액을 제외하고 이용하지 않은 일수에 따라 환불 금액이 산정됩니다.',
+        '정규 강의 시작 후 환불을 원하시면 <b>구매처(네이버)가 아닌 단꿈e로 먼저 연락</b>해 주셔야 합니다.',
+        '<b>총 수강 기간의 1/2이 지나면 환불이 불가</b>할 수 있습니다.',
         '자세한 환불 규정은 단꿈e 홈페이지 이용 약관에서 확인하실 수 있습니다.',
       ]},
     ],
   },
 };
+
+/* 패키지 교재 구성 — 상품명의 '기본/심화'로 구분, {G}는 상품명의 학년 */
+const PACKAGE_BOOKS = {
+  '기본': '수학 {G}학년 1~2학기, 한국사 첫걸음, 독해, 논술 기본, 독서 1~12단원',
+  '심화': '수학 {G}학년 1~2학기, 한국사 기초/실력, 논술 심화, 독서 1~12단원',
+};
+function packageBooksText(product){
+  const m = [...String(product).matchAll(/([1-6])\s*학년\s*\/\s*(기본|심화)/g)].pop(); // 옵션 변경(▶) 시 마지막 값 기준
+  if (!m || !PACKAGE_BOOKS[m[2]]) return '구매하신 패키지 구성에 맞는 교재가 발송됩니다.';
+  return `구매하신 패키지(<b>${m[1]}학년/${m[2]}</b>)에는 <b>[${PACKAGE_BOOKS[m[2]].replace('{G}', m[1])}]</b> 교재가 포함되어 있습니다.`;
+}
 
 /* 주소 직접 입력 시 안내 — 상품별로 사은품(웰컴 키트) / 교재 */
 const ADDRESS_WARN = {
@@ -441,7 +455,7 @@ function mockApi(p){
       if (!ok) return r({ ok:false, code:'NOT_FOUND' });
       return r({ ok:true, items:[
         { row:12, orderDate:'2026.11.05', product:'종합 프리패스(12개월)', type:'freepass', submitted:false },
-        { row:8,  orderDate:'2026.10.28', product:'4학년/기본', type:'package', submitted:false },
+        { row:8,  orderDate:'2026.10.28', product:'4학년/기본', type:'package', submitted:false, addrMasked:'서울 강남구 테헤란로 ***' },
       ]});
     }
     r({ ok:true });
@@ -501,9 +515,29 @@ function startWith(item){
     ? '이미 전화 안내를 요청하셨습니다. 기다리지 않고 지금 직접 진행하셔도 됩니다.'
     : '화면 확인 대신 담당자가 전화로 도와드립니다.';
   $('#btnCall').classList.toggle('hidden', !!item.callRequested);
-  $('#addrQ').textContent = item.type === 'package'
-    ? '교재를 받으실 주소를 단꿈e 회원정보에 등록하셨나요?'
-    : '웰컴 키트를 받으실 주소를 단꿈e 회원정보에 등록하셨나요?';
+  const [b1, b2] = document.querySelectorAll('#addrSeg button');
+  resetSeg('address'); $('#addrArea').classList.add('hidden');
+  $('#addrSeg').classList.remove('hidden'); $('#naverAddr').classList.add('hidden');
+  if (item.type === 'package'){
+    // 패키지: 네이버 배송지(주소1) 앞부분을 보여 주고 확인
+    b1.dataset.v = '네이버 주소'; b1.textContent = '네, 맞아요';
+    b2.dataset.v = '다른 주소';   b2.textContent = '다른 주소로 받을게요';
+    if (item.addrMasked){
+      $('#addrQ').textContent = '교재를 아래 주소로 받으시겠어요?';
+      $('#naverAddrTxt').textContent = item.addrMasked;
+      $('#naverAddr').classList.remove('hidden');
+    } else {
+      // 시트에 주소가 없으면 바로 입력받기
+      $('#addrQ').textContent = '교재를 받으실 주소를 입력해 주세요.';
+      $('#addrSeg').classList.add('hidden');
+      state.answers.address = '다른 주소'; $('#addrArea').classList.remove('hidden');
+    }
+  } else {
+    b1.dataset.v = '등록함';     b1.textContent = '등록했어요';
+    b2.dataset.v = '아직 안 함'; b2.textContent = '아직 안 했어요';
+    $('#addrQ').textContent = '웰컴 키트를 받으실 주소를 단꿈e 회원정보에 등록하셨나요?';
+  }
+  state.addrMasked = item.addrMasked || '';
   $('#addrWarn').innerHTML = ADDRESS_WARN[item.type];
   $('#addrTitle').textContent = (item.type === 'package' ? '교재' : '사은품(웰컴 키트)') + '를 받으실 주소를 입력해 주세요';
   go(2);
@@ -520,14 +554,15 @@ document.querySelectorAll('.seg').forEach(seg => {
       $('#joinedArea').classList.remove('hidden');
     }
     if (key === 'nameMatch' && v === '아니오') return popupNameMismatch();
-    if (key === 'address') $('#addrArea').classList.toggle('hidden', v !== '아직 안 함');
+    if (key === 'address') $('#addrArea').classList.toggle('hidden', !isManualAddr(v));
     checkS2();
   });
 });
 ['#parentId','#childName','#childId','#zip','#addr1','#addr2'].forEach(s => $(s).addEventListener('input', checkS2));
 $('#addrAgree').addEventListener('change', checkS2);
+function isManualAddr(v){ return v === '아직 안 함' || v === '다른 주소'; }
 function addrOk(){
-  if (state.answers.address !== '아직 안 함') return true;
+  if (!isManualAddr(state.answers.address)) return true;
   return !!($('#addr1').value.trim() && $('#addr2').value.trim() && $('#addrAgree').checked);
 }
 function checkS2(){
@@ -541,7 +576,7 @@ $('#btnS2').onclick = () => {
   a.parentId = $('#parentId').value.trim();
   a.childName = $('#childName').value.trim();
   a.childId = $('#childId').value.trim();
-  if (a.address === '아직 안 함'){
+  if (isManualAddr(a.address)){
     a.addrZip = $('#zip').value.trim(); a.addrBase = $('#addr1').value.trim(); a.addrDetail = $('#addr2').value.trim();
     a.addrAgree = $('#addrAgree').checked;
   } else {
@@ -654,6 +689,7 @@ function renderSummary(){
     ['학부모 아이디', a.parentId],
     ['자녀', `${a.childName} (${a.childId})`],
     ['배송 주소', a.address === '등록함' ? '단꿈e 회원정보에 등록함'
+      : a.address === '네이버 주소' ? `네이버 배송지 (${state.addrMasked})`
       : `${a.addrZip ? '(' + a.addrZip + ') ' : ''}${a.addrBase} ${a.addrDetail}`],
     ['무료체험', a.trial === '미진행' ? '진행하지 않음' : a.trial],
   ];
@@ -663,7 +699,7 @@ function renderSummary(){
 $('#btnNotice').onclick = () => {
   const n = NOTICES[state.type];
   const body = n.sections.map((s,i) =>
-    `<h4><em>${i+1}</em>${s.h}</h4><ul>${s.items.map(t => `<li>${t}</li>`).join('')}</ul>`).join('')
+    `<h4><em>${i+1}</em>${s.h}</h4><ul>${s.items.map(t => `<li>${t === '{BOOKS}' ? packageBooksText(state.product) : t}</li>`).join('')}</ul>`).join('')
     + `<div class="end">— 안내 사항의 끝입니다 —</div>`;
   openModal({ title: n.title, sub: '끝까지 내려서 모든 내용을 확인해 주세요.', body, mode:'notice' });
 };
